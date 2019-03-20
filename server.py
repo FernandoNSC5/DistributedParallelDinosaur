@@ -9,7 +9,7 @@
 #					 SERVER SIDE						##
 ##########################################################
 
-import socket, pickle, data
+import socket, pickle
 
 class server():
 
@@ -18,25 +18,71 @@ class server():
 	##########################################################
 	def __init__(self):
 
-		#Initializing data class
-		self.DATA_MODULE = data.Data()
-
+		#Defining static var
 		self.SERVER_STATUS = True
-		self.BUFFER_LENGTH = self.DATA_MODULE.getBufferLength()
-		self.HOST = self.DATA_MODULE.getHostName()
-		self.PORT = self.DATA_MODULE.getPort()
+		self.BUFFER_LENGTH = 512
+		self.HOST = ""
+		self.PORT = 5220
 
 		try:
-
 			#Initializing socket sys
 			self.soc = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
-			#Create bind connection
-			self.soc.bind(self.HOST, self.SOCKET)
+			#criating bind connection
+			self.soc.bind(self.HOST, self.PORT)
 
-			#Listen to port
+			#listening to the selected port
 			self.soc.listen(1)
-			print("Server: Successfully connected to " + self.IP_DEF)
+
+			print("Server: Successfully connected")
 
 		except Exception as e:
-			print("An error ocurred\n\ttype error: " + str(e) + "\n\tclass: server -> serverSide()")
+			print("An error ocurred!\n\tError: " + str(e) + "\n\tclass: server -> server")
+
+		#Listenner loop process
+		try:
+			while True:
+				self.selection()
+			except Exception as e:
+				print("An error ocurred while processing request")
+
+
+	##########################################################
+	#					 	METHODS							##
+	##########################################################
+	def selection(self):
+		#Accepting connection
+		self.conn, self.addr = self.soc.accept()
+		print("Server: Request from: " + str(self.addr))
+
+		try:
+
+			self.rcData = self.conn.recv(self.BUFFER_LENGTH)
+
+			if not self.rcData:
+				return "";
+
+			#If rcData == 1, server reciving a PING instruction
+			if self.rcData == 1:
+				print("Server: Returning server status: " + str(self.SERVER_STATUS))
+				self.conn.sendall(self.SERVER_STATUS)
+				self.conn.close()
+				return
+
+			#Descompressing data with Pickle
+			self.recData = pickle.loads(self.rcData)
+
+			r = self.processData(self.recData)
+
+			#Returning processed data
+			self.conn.sendall(r)
+
+		finally:
+			self.conn.close()
+
+	def processData(self, vet):
+		m = 0
+		for i in vet:
+			if i > m:
+				m = i
+		return m

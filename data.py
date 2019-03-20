@@ -16,7 +16,8 @@ class Data():
 		#Socket info
 		self.AVAILABLE_IP_LIST = ["127.0.0.1", "127.0.0.2", "127.0.0.3"]
 		self.IP_LIST_LENGTH = len(self.AVAILABLE_IP_LIST)
-		self.PORT = 5220
+		#Avaliable ports
+		self.PORT = [5220, 5221, 5222, 5223, 5224, 5225]
 		self.BUFFER_LENGTH = 512
 		self.HOST_NAME = ""
 		#PyQT info
@@ -39,7 +40,7 @@ class Data():
 	def getIpListLength(self):
 		return self.IP_LIST_LENGTH
 
-	def getPort(self):
+	def getPorts(self):
 		return self.PORT
 
 	def getBufferLength(self):
