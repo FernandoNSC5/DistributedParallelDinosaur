@@ -161,7 +161,7 @@ class App(QMainWindow):
 			try:
 				print("Opening connection IP: "+str(i))
 				#With makes sure soc.close() happens
-				soc.connect(i, self.PORTS[0]):
+				soc.connect(i, self.PORTS[0])
 				#Sends data to current IP
 				print("Sending PING")
 				soc.sendall(1)
