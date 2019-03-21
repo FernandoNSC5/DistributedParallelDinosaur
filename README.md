@@ -10,8 +10,7 @@
 
 ### Dependences
 	Besides Python 3, PDD uses PyQT5.
-	If you don't have it, run into dash:
-		* pip install pyqt5
+	If you don't have it, run into dash: pip install pyqt5
 
 * [PyQT5](https://www.riverbankcomputing.com/static/Docs/PyQt5/installation.html) - PyQT5 Framework
 
