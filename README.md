@@ -13,10 +13,10 @@
 	If you don't have it, run into dash:
 		pip install pyqt5
 
-* [PyQT5] (https://www.riverbankcomputing.com/static/Docs/PyQt5/installation.html) - PyQT5 Framework
+*[PyQT5](https://www.riverbankcomputing.com/static/Docs/PyQt5/installation.html) - PyQT5 Framework
 
 ## Authors
-* [Ferando N. S. Costa] (https://www.linkedin.com/in/fernandonsc5/) - UNITAU
+*[Ferando N. S. Costa](https://www.linkedin.com/in/fernandonsc5/) - UNITAU
 
 ### PS.
 	Long life to Google's Dinossaur
