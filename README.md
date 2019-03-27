@@ -16,7 +16,7 @@
 
 ## Authors
 * [Fernando N. S. Costa](https://www.linkedin.com/in/fernandonsc5/) - UNITAU
-[Gabriel Ferrari Carvalho](https://www.linkedin.com/in/gabriel-ferrari-01a962161/) - UNITAU
+* [Gabriel Ferrari Carvalho](https://www.linkedin.com/in/gabriel-ferrari-01a962161/) - UNITAU
 
 ### PS.
 	Long life to Google's Dinossaur
