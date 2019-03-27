@@ -6,19 +6,19 @@
 ##......_/…(….)...(…../      9º Período                 ##
 ##....../...|_|–...|_|                                  ##
 ##########################################################
-#					GENERAL INFO						##
+##					GENERAL INFO						##
 ##########################################################
-# GROUP													##
-# 	Fernando Nogueira da Silva Costa					##
-# 	Gabriel Ferrari Carvalho							##
-# 	João Pedro Valart									##
-# 	Pedro Miranda Bueno dos Reis						##
-# 														##
-# COLOR SCHEMA											##
-# 	BACKGROUND #e1d7bc									##
-# 	BORDER     #543138									##
-# 	FONT       #678875									##
-# 	OTHER	   #373948									##
+## GROUP												##
+## 	Fernando Nogueira da Silva Costa					##
+## 	Gabriel Ferrari Carvalho							##
+## 	João Pedro Valart									##
+## 	Pedro Miranda Bueno dos Reis						##
+## 														##
+## COLOR SCHEMA											##
+## 	BACKGROUND #e1d7bc									##
+## 	BORDER     #543138									##
+## 	FONT       #678875									##
+## 	OTHER	   #373948									##
 ##########################################################
 
 ##########################################################
