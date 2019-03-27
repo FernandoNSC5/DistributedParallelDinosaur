@@ -10,7 +10,7 @@
 ##########################################################
 # GROUP													##
 # 	Fernando Nogueira da Silva Costa					##
-# 	Gabriel Ferrari de Carvalho							##
+# 	Gabriel Ferrari Carvalho							##
 # 	João Pedro Valart									##
 # 	Pedro Miranda Bueno dos Reis						##
 # 														##
