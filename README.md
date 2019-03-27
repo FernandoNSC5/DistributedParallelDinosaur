@@ -15,7 +15,8 @@
 * [PyQT5](https://www.riverbankcomputing.com/static/Docs/PyQt5/installation.html) - PyQT5 Framework
 
 ## Authors
-* [Ferando N. S. Costa](https://www.linkedin.com/in/fernandonsc5/) - UNITAU
+* [Fernando N. S. Costa](https://www.linkedin.com/in/fernandonsc5/) - UNITAU
+* [Gabriel Ferrari Carvalho] - UNITAU
 
 ### PS.
 	Long life to Google's Dinossaur
