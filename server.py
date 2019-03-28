@@ -18,6 +18,8 @@ class server():
 	##########################################################
 	def __init__(self):
 
+		print("Initializing server...")
+
 		#Defining static var
 		self.SERVER_STATUS = True
 		self.BUFFER_LENGTH = 512
@@ -29,7 +31,7 @@ class server():
 			self.soc = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
 			#criating bind connection
-			self.soc.bind(self.HOST, self.PORT)
+			self.soc.bind((self.HOST, self.PORT))
 
 			#listening to the selected port
 			self.soc.listen(1)
@@ -40,12 +42,12 @@ class server():
 			print("An error ocurred!\n\tError: " + str(e) + "\n\tclass: server -> server")
 
 		#Listenner loop process
-		try:
-			while True:
+		while True:
+			try:
 				self.selection()
 			except Exception as e:
 				print("An error ocurred while processing request")
-
+				break
 
 	##########################################################
 	#					 	METHODS							##
@@ -86,3 +88,8 @@ class server():
 			if i > m:
 				m = i
 		return m
+
+##########################################################
+##						INITING							##
+##########################################################
+var = server()

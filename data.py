@@ -14,7 +14,8 @@ class Data():
 	#####################################################
 	def __init__(self):
 		#Socket info
-		self.AVAILABLE_IP_LIST = ["127.0.0.1", "127.0.0.2", "127.0.0.3"]
+		#########################   OnePlus 5T	   VALAR
+		self.AVAILABLE_IP_LIST = ["100.100.39.39", "", "127.0.0.3"]
 		self.IP_LIST_LENGTH = len(self.AVAILABLE_IP_LIST)
 		#Avaliable ports
 		self.PORT = [5220, 5221, 5222, 5223, 5224, 5225]
