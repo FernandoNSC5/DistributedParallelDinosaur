@@ -1,95 +1,97 @@
 ##########################################################
-##.....................__    DATA SERVICE               ##
+##.....................__    SERVER SIDE                ##
 ##.................../ *_)                              ##
 ##......... _,—-,  _/../     Universidade de Taubaté    ##
 ##......../............)     Sistemas Distribuidos      ##
 ##......_/…(….)...(…../      9º Período                 ##
 ##....../...|_|–...|_|                                  ##
 ##########################################################
-#					 SERVER SIDE						##
+##	        WELCOME TO SERVER SIDE						##
 ##########################################################
 
-import socket, pickle
+# COMMANDS LIST
+#   RECIVE "SHUTDOWN" - Turn off server
+#   RECIVE "PING"     - Returns server status
+
+import socket
 
 class server():
+    
+    def __init__(self):
+        
+        self.PORT = 3081
+        self.BUFFER_LENGTH = 128
+        self.HOST = ""
+        
+        ###############
+        #   STATUS
+        #
+        #   1  - Avaliable
+        #   2  - Not avaliable
+        #
+        self.STATUS = 1
+        
+        #Initializing server
+        self.initServer()
+    
+    def initServer(self):
+        
+        print("[INFO] Initializing server...")
+        
+        try:
+            
+            soc = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            soc.bind((self.HOST, self.PORT))
+            print("[SERVER] Initialized")
+            
+            while True:
+                
+                soc.listen(1)
+                print("[SERVER] Listenning...")
+                conn, addr = soc.accept()
+                print("[SERVER] Request from " + str(addr))
+                
+                while True:
+                    rcData = conn.recv(self.BUFFER_LENGTH).decode()
+                    
+                    if str(rcData) == "SHUTDOWN":
+                        print("[SERVER] Turning off...")
+                        break
+                    elif str(rcData) == "PING":
+                        print("[SERVER] Ping recived from " + str(addr))
+                        conn.send(str(self.STATUS).encode())
+                        print("[SERVER] Status returned")
+                        print("\n")
+                        continue
+                    else:    
+                        print("[SERVER] Request from " + str(addr))
+                        print("[SERVER] Processing...")
+                        resp = self.process(str(rcData))
+                        
+                        print("[SERVER] Sending response")
+                        conn.send(str(resp).encode())
+                        print("[INFO] Response sent to " + str(addr))
+                    
+                    print("\n")
+                
+                break
+        
+        except Exception as e:
+            print("[ERROR] " + str(e))
+            
+        finally:
+            print("[INFO] Closing connection")
+            soc.close()
+            
+    def process(self, data):
+        
+        var = data.split()
+        max = 0
+        for i in var:
+            
+               if int(i) > max:
+                   max = int(i)
+        return str(max)
 
-	##########################################################
-	#					 SERVER SIDE						##
-	##########################################################
-	def __init__(self):
-
-		print("Initializing server...")
-
-		#Defining static var
-		self.SERVER_STATUS = True
-		self.BUFFER_LENGTH = 512
-		self.HOST = ""
-		self.PORT = 5220
-
-		try:
-			#Initializing socket sys
-			self.soc = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-
-			#criating bind connection
-			self.soc.bind((self.HOST, self.PORT))
-
-			#listening to the selected port
-			self.soc.listen(1)
-
-			print("Server: Successfully connected")
-
-		except Exception as e:
-			print("An error ocurred!\n\tError: " + str(e) + "\n\tclass: server -> server")
-
-		#Listenner loop process
-		while True:
-			try:
-				self.selection()
-			except Exception as e:
-				print("An error ocurred while processing request")
-				break
-
-	##########################################################
-	#					 	METHODS							##
-	##########################################################
-	def selection(self):
-		#Accepting connection
-		self.conn, self.addr = self.soc.accept()
-		print("Server: Request from: " + str(self.addr))
-
-		try:
-
-			self.rcData = self.conn.recv(self.BUFFER_LENGTH)
-
-			if not self.rcData:
-				return "";
-
-			#If rcData == 1, server reciving a PING instruction
-			if self.rcData == 1:
-				print("Server: Returning server status: " + str(self.SERVER_STATUS))
-				self.conn.sendall(self.SERVER_STATUS)
-				self.conn.close()
-				return
-
-			#Descompressing data with Pickle
-			self.recData = pickle.loads(self.rcData)
-
-			r = self.processData(self.recData)
-
-			#Returning processed data
-			self.conn.sendall(r)
-
-		finally:
-			self.conn.close()
-
-	def processData(self, vet):
-		m = 0
-		for i in vet:
-			if i > m:
-				m = i
-		return m
-
-##########################################################
-##						INITING							##
-##########################################################
-var = server()
+s = server()
+                
