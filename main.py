@@ -27,6 +27,7 @@
 #System
 import sys
 import asyncio
+import time
 
 #PyQT
 from PyQt5 import QtCore, QtWidgets, QtGui
@@ -36,6 +37,7 @@ from PyQt5.QtGui import QIcon, QPixmap, QPainter, QFont, QPen, QIntValidator
 
 #UNITAU stuff
 import data as dt
+import threadingModule as Thread
 
 class App(QMainWindow):
 
@@ -44,8 +46,11 @@ class App(QMainWindow):
 		self.DATA_MODULE = dt.Data()
 		self.NUM_SERVER = self.DATA_MODULE.getIpListLength()
 		self.IP_LIST = self.DATA_MODULE.getIpList()
-		self.PORTS_LIST = self.DATA_MODULE.getPorts()
-		self.BUFFER_LENGHT = 512
+		self.PORT = self.DATA_MODULE.getPort()
+		self.BUFFER_LENGHT = 128
+
+		#Avaliable Threads
+		self.threads = []
 
 		#Destroying Windows Flags
 		self.setWindowFlags(
@@ -60,6 +65,36 @@ class App(QMainWindow):
 		#Input Fields
 		searchNum = 0
 		searchVector = []
+
+		for i in self.IP_LIST:
+			self.threads.append(Thread.clientThread(i, self.PORT))
+			self.threads[len(self.threads) -1].start()
+
+		for thread in self.threads:
+			thread.join()
+
+		for thread in self.threads:
+			if not thread.ping():
+				self.threads.remove(thread)
+
+		'''#Initializing Threads
+		self.threadsSize = 0
+		for i in range(len(self.IP_LIST)):
+			self.threads.append(None)
+			self.threads[self.threadsSize] = Thread.clientThread(self.IP_LIST[i], self.PORT)
+			self.threads[self.threadsSize].start()
+
+			time.sleep(4)
+
+			if self.threads[self.threadsSize].ping():
+				self.threadsSize = self.threadsSize + 1
+				continue
+			else:
+				self.threads[self.threadsSize].closeConnection()
+				self.threads.pop(self.threadsSize)
+
+		'''
+
 
 		#PyQT sets
 		self.pixmap = QPixmap('images/background.png')
@@ -128,7 +163,7 @@ class App(QMainWindow):
 						"QPushButton:hover {background-color: #34495e}"
 						"QPushButton:disabled {background-color: grey}"
 						"QPushButton:disabled {color: white}")
-		#self.searchBtn.clicked.connect(self.process)
+		self.searchBtn.clicked.connect(self.process)
 
 		self.responseLine = QLabel(self)
 		self.responseLine.setText("Server Status: " + "none")
@@ -148,96 +183,47 @@ class App(QMainWindow):
 
 	@pyqtSlot()
 	def process(self):
-		printf("Creating connection")
-		#Creating Connection
-		soc = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-		
-		#List of avaliable servers
-		avaliableIp = []
-		
-		#PING Loop
-		for i in self.IP_LIST:
-			#1 -> Server avaliable	
-			try:
-				print("Opening connection IP: "+str(i))
-				#With makes sure soc.close() happens
-				soc.connect(i, self.PORTS[0])
-				#Sends data to current IP
-				print("Sending PING")
-				soc.sendall(1)
-				#Gets response
-				self.ipResp = int(soc.recv(self.BUFFER_LENGHT))
-				print("Server Response: " + str(ipResp))
 
-				if ipResp == 1:
-					self.avaliableIp.append(i)
+		#Get data inputed on UI
+		dt = self.vectorLine.text()
 
-			finally:
-				print("Final avaliable IP list: " + str(self.avaliableIp))
-				soc.close()
-
-			#Getting splited vector
-			entryVector = vetSegregation()
-			#Fragmentating main vector
-			subVectorList = vectorFragmentation(entryVector, avaliableIp.size())
-
-			#All ANSWER-RESPONSES list
-			answers = []
-
-			#Sending fracments
-			#Connecting in each ip
-			aux = 0
-			for i in self.avaliableIp:
-				try:
-					print("Creating connection: Ip: " + str(i))
-					soc.connect(i, self.PORTS[aux])
-					
-					#Creating serializable - fragment based
-					currentData = pickle.dumps(subVectorList[aux])
-
-					#sending data to current IP
-					answers.append(int(soc.recv(self.BUFFER_LENGHT)))
-
-					aux += 1
-			
-				finally:
-					print("Closing connections")
-					soc.close()
-
-			#Getting max value on responses
-			maxValue = max(answers)
-
-			self.responseLine.setText("Max value: " + str(maxValue))
+		if dt == "SHUTDOWN":
+			for i in self.threads:
+				i.closeConnection()
+			self.responseLine.setText("Connection ended. Reestart software")
 			self.update()
+			return
 
-##########################################################
-##						METHODS							##
-##########################################################
-#VectorFragmentation(List vet, int size (of IP list))
-def vectorFragmentation(self, vet, size):
-	#Number of vet fragments
-	numOfFrag = int(size(vet)/size)
+		#Creates sub-vectors
+		dt = list(map(int, dt.split()))
+		print("Vector fragmentation: " + str(self.vectorFragmentation(dt, len(self.threads))))
+		vectorOfSubvectors = self.vectorFragmentation(dt, len(self.threads))
 
-	#Creating sub-vet fragments
-	frag = []
-	aux = 0
-	for i in range(numOfFrag):
-		if i == numOfFrag-1:
-			frag.append(vet[numOfFrag*i : size(vet)])
-			return frag
+		resp = dt[0]
+		for i in range(len(self.threads)):
+			resp = max(resp, int(self.threads[i].sendData(" ".join(str(x) for x in vectorOfSubvectors[i]))))
 
-		frag.append(vet[numOfFrag*i : numOfFrag*(i+1)])
+		self.responseLine.setText("Max value: " + str(resp))
+		self.update()
 
-def vetSegregation(self):
-	#This method will read VECTORLINE field on screen,
-	#get the vector string and convert it to a list
-	#splited by SPACE characteres
-	vet = self.vectorLine.currentText().split()
-	count = 0
-	for i in vet:
-		vet[i] = int(i)
-		count += 1
-	return vet
+	##########################################################
+	##						METHODS							##
+	##########################################################
+	#VectorFragmentation(List vet, int size (of IP list))
+	def vectorFragmentation(self, vet, size):
+
+		#Number of vet fragments
+		numOfFrag = int(len(vet)/size)
+
+		#Creating sub-vet fragments
+		frag = []
+		aux = 0
+		for i in range(numOfFrag):
+			if i == numOfFrag-1:
+				frag.append(vet[numOfFrag*i : len(vet)])
+				return frag
+
+			frag.append(vet[numOfFrag*i : numOfFrag*(i+1)])
 
 ##########################################################
 ##						INITING							##

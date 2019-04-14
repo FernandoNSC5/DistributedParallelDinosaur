@@ -14,12 +14,12 @@ class Data():
 	#####################################################
 	def __init__(self):
 		#Socket info
-		#########################   OnePlus 5T	   VALAR
-		self.AVAILABLE_IP_LIST = ["100.100.39.39", "", "127.0.0.3"]
+		######################### 	   	     Pi        Oneplus
+		self.AVAILABLE_IP_LIST = ["192.168.137.141", "192.168.137.73"]
 		self.IP_LIST_LENGTH = len(self.AVAILABLE_IP_LIST)
 		#Avaliable ports
-		self.PORT = [5220, 5221, 5222, 5223, 5224, 5225]
-		self.BUFFER_LENGTH = 512
+		self.PORT = 3102
+		self.BUFFER_LENGTH = 128
 		self.HOST_NAME = ""
 		#PyQT info
 		self.LEFT = 10
@@ -41,7 +41,7 @@ class Data():
 	def getIpListLength(self):
 		return self.IP_LIST_LENGTH
 
-	def getPorts(self):
+	def getPort(self):
 		return self.PORT
 
 	def getBufferLength(self):

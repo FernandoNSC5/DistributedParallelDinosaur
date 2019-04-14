@@ -85,8 +85,8 @@ class server():
             
     def process(self, data):
         
-        var = data.split()
-        max = 0
+        var = list(map(int, data.split()))
+        max = var[0]
         for i in var:
             
                if int(i) > max:
