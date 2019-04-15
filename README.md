@@ -17,7 +17,7 @@ Distributed Parallel Dinosaur suses a number of built-in Python3 imports.
 We higly recomend you to install PyQt5 using PIP. 
 On prompt:
 ```sh
-pip3 install PyQt4
+pip3 install PyQt5
 ```
 
  ##### Fernando N. S. Costa - UNITAU
