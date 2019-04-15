@@ -63,11 +63,14 @@ class server():
                         print("[SERVER] Status returned")
                         print("\n")
                         continue
-                    else:    
+                    else:
                         print("[SERVER] Request from " + str(addr))
                         print("[SERVER] Processing...")
-                        resp = self.process(str(rcData))
-                        
+                        opType, rcData = rcData.split("#")
+                        if opType == "MAX":
+                            resp = self.processMax(str(rcData))
+                        elif opType == "MIN":
+                            resp = self.processMin(str(rcData))
                         print("[SERVER] Sending response")
                         conn.send(str(resp).encode())
                         print("[INFO] Response sent to " + str(addr))
@@ -83,15 +86,21 @@ class server():
             print("[INFO] Closing connection")
             soc.close()
             
-    def process(self, data):
-        
+    def processMax(self, data):
         var = list(map(int, data.split()))
         max = var[0]
         for i in var:
-            
-               if int(i) > max:
-                   max = int(i)
+            if int(i) > max:
+                max = int(i)
         return str(max)
+            
+    def processMin(self, data):
+        var = list(map(int, data.split()))
+        min = var[0]
+        for i in var:
+            if int(i) < min:
+                min = int(i)
+        return str(min)
 
 s = server()
                 

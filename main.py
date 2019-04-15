@@ -11,7 +11,7 @@
 ## GROUP												##
 ## 	Fernando Nogueira da Silva Costa					##
 ## 	Gabriel Ferrari Carvalho							##
-## 	João Pedro Valart									##
+## 	João Pedro Silvino Paes								##
 ## 	Pedro Miranda Bueno dos Reis						##
 ## 														##
 ## COLOR SCHEMA											##
@@ -62,40 +62,6 @@ class App(QMainWindow):
 						QtCore.Qt.WindowStaysOnTopHint
 						)
 
-		#Input Fields
-		searchNum = 0
-		searchVector = []
-
-		for i in self.IP_LIST:
-			self.threads.append(Thread.clientThread(i, self.PORT))
-			self.threads[len(self.threads) -1].start()
-
-		for thread in self.threads:
-			thread.join()
-
-		for thread in self.threads:
-			if not thread.ping():
-				self.threads.remove(thread)
-
-		'''#Initializing Threads
-		self.threadsSize = 0
-		for i in range(len(self.IP_LIST)):
-			self.threads.append(None)
-			self.threads[self.threadsSize] = Thread.clientThread(self.IP_LIST[i], self.PORT)
-			self.threads[self.threadsSize].start()
-
-			time.sleep(4)
-
-			if self.threads[self.threadsSize].ping():
-				self.threadsSize = self.threadsSize + 1
-				continue
-			else:
-				self.threads[self.threadsSize].closeConnection()
-				self.threads.pop(self.threadsSize)
-
-		'''
-
-
 		#PyQT sets
 		self.pixmap = QPixmap('images/background.png')
 		#self.setWindowIcon(QtGui.QIcon('images/icon.png'))
@@ -107,16 +73,17 @@ class App(QMainWindow):
 
 		#Close Button
 		self.drawKillButton()
+		self.drawRefreshButton()
 		self.drawUI()
 
 		self.show()
+		self.makeConnection()
 
 	#####################################################
 	##				PAINTING EVENTS					   ##
 	#####################################################
 	def paintEvent(self, e):
 		painter = QtGui.QPainter(self)
-		loop = asyncio.get_event_loop()
 		painter.drawPixmap(self.rect(), self.pixmap)
 		painter.setRenderHint(QPainter.Antialiasing, True)
 
@@ -137,6 +104,16 @@ class App(QMainWindow):
 				"QPushButton {border-radius: 12px}")
 		self.killBtn.clicked.connect(self.killAppAction)
 
+	def drawRefreshButton(self):
+		self.refreshBtn = QPushButton(u"\u21BB", self)
+		self.refreshBtn.setVisible(True)
+		self.refreshBtn.resize(25,25)
+		self.refreshBtn.move(720,25)
+		self.refreshBtn.setStyleSheet("QPushButton {background-color: #543138}"
+				"QPushButton {color: white}"
+				"QPushButton {border-radius: 12px}")
+		self.refreshBtn.clicked.connect(self.makeConnection)
+
 	def drawUI(self):
 		self.vectorLine = QLineEdit(self)
 		self.vectorLine.setVisible(True)
@@ -151,11 +128,11 @@ class App(QMainWindow):
 						"QLineEdit:disabled {color: #CD7054}")
 
 
-		self.searchBtn = QPushButton("Search", self)
-		self.searchBtn.setVisible(True)
-		self.searchBtn.move(520, 240)
-		self.searchBtn.resize(180, 40)
-		self.searchBtn.setStyleSheet("QPushButton {background-color: #c88770}"
+		self.searchMaxBtn = QPushButton("Search Max", self)
+		self.searchMaxBtn.setVisible(True)
+		self.searchMaxBtn.move(520, 240)
+		self.searchMaxBtn.resize(180, 40)
+		self.searchMaxBtn.setStyleSheet("QPushButton {background-color: #c88770}"
 						"QPushButton {color: white}"
 						"QPushButton {border-radius: 12px}"
 						"QPushButton:pressed {background-color: #2c3e50}"
@@ -163,14 +140,37 @@ class App(QMainWindow):
 						"QPushButton:hover {background-color: #34495e}"
 						"QPushButton:disabled {background-color: grey}"
 						"QPushButton:disabled {color: white}")
-		self.searchBtn.clicked.connect(self.process)
+		self.searchMaxBtn.clicked.connect(self.processMax)
+
+		self.searchMinBtn = QPushButton("Search Min", self)
+		self.searchMinBtn.setVisible(True)
+		self.searchMinBtn.move(320, 240)
+		self.searchMinBtn.resize(180, 40)
+		self.searchMinBtn.setStyleSheet("QPushButton {background-color: #c88770}"
+						"QPushButton {color: white}"
+						"QPushButton {border-radius: 12px}"
+						"QPushButton:pressed {background-color: #2c3e50}"
+						"QPushButton:pressed {border-style: inset}"
+						"QPushButton:hover {background-color: #34495e}"
+						"QPushButton:disabled {background-color: grey}"
+						"QPushButton:disabled {color: white}")
+		self.searchMinBtn.clicked.connect(self.processMin)
 
 		self.responseLine = QLabel(self)
-		self.responseLine.setText("Server Status: " + "none")
+		self.responseLine.setText("")
 		self.responseLine.resize(400, 20)
 		self.responseLine.move(280, 300)
 		self.responseLine.setVisible(True)
 		self.responseLine.setStyleSheet("QLabel {color: #678875}"
+						"QLabel {font-size: 20px}"
+						"QLabel {font-family: Calibri Light}")
+
+		self.serverLine = QLabel(self)
+		self.serverLine.setText("Offline")
+		self.serverLine.resize(200, 20)
+		self.serverLine.move(20, 20)
+		self.serverLine.setVisible(True)
+		self.serverLine.setStyleSheet("QLabel {color: #678875}"
 						"QLabel {font-size: 20px}"
 						"QLabel {font-family: Calibri Light}")
 
@@ -179,32 +179,16 @@ class App(QMainWindow):
 	#####################################################
 	@pyqtSlot()
 	def killAppAction(self):
+		self.closeConnection()
 		sys.exit()
 
 	@pyqtSlot()
-	def process(self):
+	def processMax(self):
+		self.process("MAX")
 
-		#Get data inputed on UI
-		dt = self.vectorLine.text()
-
-		if dt == "SHUTDOWN":
-			for i in self.threads:
-				i.closeConnection()
-			self.responseLine.setText("Connection ended. Reestart software")
-			self.update()
-			return
-
-		#Creates sub-vectors
-		dt = list(map(int, dt.split()))
-		print("Vector fragmentation: " + str(self.vectorFragmentation(dt, len(self.threads))))
-		vectorOfSubvectors = self.vectorFragmentation(dt, len(self.threads))
-
-		resp = dt[0]
-		for i in range(len(self.threads)):
-			resp = max(resp, int(self.threads[i].sendData(" ".join(str(x) for x in vectorOfSubvectors[i]))))
-
-		self.responseLine.setText("Max value: " + str(resp))
-		self.update()
+	@pyqtSlot()
+	def processMin(self):
+		self.process("MIN")
 
 	##########################################################
 	##						METHODS							##
@@ -217,13 +201,62 @@ class App(QMainWindow):
 
 		#Creating sub-vet fragments
 		frag = []
-		aux = 0
 		for i in range(numOfFrag):
 			if i == numOfFrag-1:
 				frag.append(vet[numOfFrag*i : len(vet)])
 				return frag
-
 			frag.append(vet[numOfFrag*i : numOfFrag*(i+1)])
+
+	#process(string opType (Type of Operation [MAX, MIN]))
+	def process(self, opType):
+		if(len(self.threads) == 0):
+			self.responseLine.setText("No connection.")
+			return
+		#Get data inputed on UI
+		dt = self.vectorLine.text()
+
+		if(len(dt) == 0):
+			self.responseLine.setText("No data to proccess.")
+			return
+
+		#Creates sub-vectors
+		dt = list(map(int, dt.split()))
+		vectorOfSubvectors = self.vectorFragmentation(dt, len(self.threads))
+
+		resp = dt[0]
+		for i in range(len(self.threads)):
+			resp = max(resp, int(self.threads[i].sendData(opType + "#" + " ".join(str(x) for x in vectorOfSubvectors[i]))))
+
+		self.responseLine.setText(opType + " VALUE: " + str(resp))
+		self.update()
+
+	def makeConnection(self):
+		self.closeConnection()
+		self.serverLine.setText("Refreshing")
+		self.update()
+		for i in self.IP_LIST:
+			self.threads.append(Thread.clientThread(i, self.PORT))
+			self.threads[len(self.threads) -1].start()
+
+		for thread in self.threads:
+			thread.join()
+
+		for thread in self.threads:
+			if not thread.ping():
+				self.threads.remove(thread)
+		
+		if(len(self.threads)):
+			self.serverLine.setText("Online")
+		else:
+			self.serverLine.setText("Offline")
+		self.update()
+
+	def closeConnection(self):
+		for thread in self.threads:
+			thread.closeConnection()
+			self.threads.remove(thread)
+		self.serverLine.setText("Offline")
+		self.update()
 
 ##########################################################
 ##						INITING							##
