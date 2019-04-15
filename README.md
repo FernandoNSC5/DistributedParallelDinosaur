@@ -1,22 +1,33 @@
-# Parallel Distributed Dinosaur
-	This simple software were developed in order to exemplify Parallel Processing and Distributed Processing.
-	It's able to distribute a vector to many machines in order to find the higher value.
+# Distributed Parallel Dinosaur
+![Programming Language](https://img.shields.io/github/languages/top/FernandoNSC5/DistributedParallelDinosaur.svg?logo=python&logoColor=green) ![Version](https://img.shields.io/badge/Version-1.1%20Dinossaur-lightgrey.svg?style=popout) ![Last Commit](https://img.shields.io/github/last-commit/FernandoNSC5/DistributedParallelDinosaur.svg?style=popout&logo=fire)
 
-	UNITAU - Universidade de Taubaté
+This simple college software were developed in order to exemplify Parallel Processing and Distributed Processing.
 
-## Getting Started
-	
-	This structions will help you installing the dependences and use PDD (Parallel Distributed Dinosaur)
+Distributed Parallel dinosaur has a simple UI able to handle an string, stripe it into sub-lists and send to many servers as you want in order to find the higher value
+
+Entire code commented in order to explain what were done | UNITAU - Universidade de Taubaté 
 
 ### Dependences
-	Besides Python 3, PDD uses PyQT5.
-	If you don't have it, run into dash: pip install pyqt5
+Distributed Parallel Dinosaur suses a number of built-in Python3 imports.
+  - Python 3.7 - Programming language used
+  - Threading - Builtin lib
+  - Asyncio - Builtin lib
+  - [PyQT5](https://www.riverbankcomputing.com/static/Docs/PyQt5/installation.html) - PyQT5 Framework
 
-* [PyQT5](https://www.riverbankcomputing.com/static/Docs/PyQt5/installation.html) - PyQT5 Framework
+We higly recomend you to install PyQt5 using PIP. 
+On prompt:
+```sh
+pip3 install PyQt4
+```
 
-## Authors
-* [Fernando N. S. Costa](https://www.linkedin.com/in/fernandonsc5/) - UNITAU
-* [Gabriel Ferrari Carvalho](https://www.linkedin.com/in/gabriel-ferrari-01a962161/) - UNITAU
+ ##### Fernando N. S. Costa - UNITAU
+   [![](https://img.shields.io/badge/Fernando%20Costa-linkedin-blue.svg?style=social&logo=linkedin)](https://www.linkedin.com/in/fernandonsc5/) [![](https://img.shields.io/badge/Dautomne__-Instagram.svg?style=social&logo=instagram)](https://www.instagram.com/dautomne_/)
+ ##### Gabriel Ferrari Carvalho - UNITAU
+   [![](https://img.shields.io/badge/Gabriel-linkedin-blue.svg?style=social&logo=linkedin)](https://www.linkedin.com/in/gabriel-ferrari-01a962161/)
 
-### PS.
-	Long life to Google's Dinossaur
+Long life to Google's Dinosaur
+
+
+
+
+
