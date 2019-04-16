@@ -43,10 +43,10 @@ class App(QMainWindow):
 
 	def __init__(self):
 		super().__init__()
-		self.DATA_MODULE = dt.Data()
-		self.NUM_SERVER = self.DATA_MODULE.getIpListLength()
-		self.IP_LIST = self.DATA_MODULE.getIpList()
-		self.PORT = self.DATA_MODULE.getPort()
+		self.DATA_MODULE   = dt.Data()
+		self.NUM_SERVER    = self.DATA_MODULE.getIpListLength()
+		self.IP_LIST       = self.DATA_MODULE.getIpList()
+		self.PORT          = self.DATA_MODULE.getPort()
 		self.BUFFER_LENGHT = 128
 
 		#Avaliable Threads
@@ -54,7 +54,6 @@ class App(QMainWindow):
 
 		#Destroying Windows Flags
 		self.setWindowFlags(
-						QtCore.Qt.WA_NoSystemBackground |
 						QtCore.Qt.Window |
 						QtCore.Qt.CustomizeWindowHint |
 						QtCore.Qt.WindowTitleHint |
@@ -73,7 +72,6 @@ class App(QMainWindow):
 
 		#Close Button
 		self.drawKillButton()
-		self.drawRefreshButton()
 		self.drawUI()
 
 		self.show()
@@ -103,16 +101,6 @@ class App(QMainWindow):
 				"QPushButton {color: white}"
 				"QPushButton {border-radius: 12px}")
 		self.killBtn.clicked.connect(self.killAppAction)
-
-	def drawRefreshButton(self):
-		self.refreshBtn = QPushButton(u"\u21BB", self)
-		self.refreshBtn.setVisible(True)
-		self.refreshBtn.resize(25,25)
-		self.refreshBtn.move(720,25)
-		self.refreshBtn.setStyleSheet("QPushButton {background-color: #543138}"
-				"QPushButton {color: white}"
-				"QPushButton {border-radius: 12px}")
-		self.refreshBtn.clicked.connect(self.makeConnection)
 
 	def drawUI(self):
 		self.vectorLine = QLineEdit(self)
@@ -179,7 +167,7 @@ class App(QMainWindow):
 	#####################################################
 	@pyqtSlot()
 	def killAppAction(self):
-		self.closeConnection()
+		self.closeConnections()
 		sys.exit()
 
 	@pyqtSlot()
@@ -194,15 +182,16 @@ class App(QMainWindow):
 	##						METHODS							##
 	##########################################################
 	#VectorFragmentation(List vet, int size (of IP list))
-	def vectorFragmentation(self, vet, size):
-
+	def vectorFragmentation(self, vet):
+		#Size = number of open threads
+		size = len(self.threads)
 		#Number of vet fragments
 		numOfFrag = int(len(vet)/size)
-
 		#Creating sub-vet fragments
 		frag = []
-		for i in range(numOfFrag):
-			if i == numOfFrag-1:
+		loopCounter = numOfFrag*size
+		for i in range(loopCounter):
+			if i == (loopCounter)-1:
 				frag.append(vet[numOfFrag*i : len(vet)])
 				return frag
 			frag.append(vet[numOfFrag*i : numOfFrag*(i+1)])
@@ -221,17 +210,26 @@ class App(QMainWindow):
 
 		#Creates sub-vectors
 		dt = list(map(int, dt.split()))
-		vectorOfSubvectors = self.vectorFragmentation(dt, len(self.threads))
+		vectorOfSubvectors = self.vectorFragmentation(dt)
 
 		resp = dt[0]
+
+		if opType == "MAX":
+			typeFunction = max
+		elif opType == "MIN":
+			typeFunction = min
+		else:
+			self.responseLine.setText("Type of function error")
+			self.update()
+			return
+
 		for i in range(len(self.threads)):
-			resp = max(resp, int(self.threads[i].sendData(opType + "#" + " ".join(str(x) for x in vectorOfSubvectors[i]))))
+			resp = typeFunction(resp, int(self.threads[i].sendData(opType + "#" + " ".join(str(x) for x in vectorOfSubvectors[i]))))
 
 		self.responseLine.setText(opType + " VALUE: " + str(resp))
 		self.update()
 
 	def makeConnection(self):
-		self.closeConnection()
 		self.serverLine.setText("Refreshing")
 		self.update()
 		for IP in self.IP_LIST:
@@ -239,7 +237,7 @@ class App(QMainWindow):
 			self.threads[-1].start()
 
 		for thread in self.threads:
-			thread.join(0.5)
+			thread.join(1.5)
 
 		j = 0
 		while j < len(self.threads):
@@ -247,7 +245,6 @@ class App(QMainWindow):
 				self.threads[j].ping()
 				j += 1
 			except Exception:
-				print(self.threads[j])
 				self.threads.pop(j)
 		
 		if(len(self.threads)):
@@ -256,15 +253,10 @@ class App(QMainWindow):
 			self.serverLine.setText("Offline")
 		self.update()
 
-	def closeConnection(self):
-		j = 0
-		while j < len(self.threads):
-			try:
-				self.threads[j].ping()
-				j += 1
-			except Exception:
-				print(self.threads[j])
-				self.threads.pop(j)
+	def closeConnections(self):
+		while len(self.threads):
+			self.threads[0].closeConnection()
+			self.threads.pop(0)
 
 ##########################################################
 ##						INITING							##
