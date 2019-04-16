@@ -50,7 +50,6 @@ class clientThread(Thread):
 
 	#Sending pint to self.IP
 	def ping(self):
-
 		try:
 			print("[INFO] Sending PING to " + str(self.IP))
 			self.soc.send("PING".encode())
@@ -65,7 +64,7 @@ class clientThread(Thread):
 				return False
 		except Exception as e:
 			print("[ERROR] ping " + str(e))
-			return
+			raise e
 
 	# Sends sub-vector to process on self.IP
 	def sendData(self, data):

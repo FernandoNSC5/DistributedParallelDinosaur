@@ -234,16 +234,21 @@ class App(QMainWindow):
 		self.closeConnection()
 		self.serverLine.setText("Refreshing")
 		self.update()
-		for i in self.IP_LIST:
-			self.threads.append(Thread.clientThread(i, self.PORT))
-			self.threads[len(self.threads) -1].start()
+		for IP in self.IP_LIST:
+			self.threads.append(Thread.clientThread(IP, self.PORT))
+			self.threads[-1].start()
 
 		for thread in self.threads:
-			thread.join()
+			thread.join(0.5)
 
-		for thread in self.threads:
-			if not thread.ping():
-				self.threads.remove(thread)
+		j = 0
+		while j < len(self.threads):
+			try:
+				self.threads[j].ping()
+				j += 1
+			except Exception:
+				print(self.threads[j])
+				self.threads.pop(j)
 		
 		if(len(self.threads)):
 			self.serverLine.setText("Online")
@@ -252,11 +257,14 @@ class App(QMainWindow):
 		self.update()
 
 	def closeConnection(self):
-		for thread in self.threads:
-			thread.closeConnection()
-			self.threads.remove(thread)
-		self.serverLine.setText("Offline")
-		self.update()
+		j = 0
+		while j < len(self.threads):
+			try:
+				self.threads[j].ping()
+				j += 1
+			except Exception:
+				print(self.threads[j])
+				self.threads.pop(j)
 
 ##########################################################
 ##						INITING							##
