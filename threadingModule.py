@@ -86,7 +86,7 @@ class clientThread(Thread):
 			print("[ERROR] " + str(e))
 			return
 
-	# Closes connection
+	# Closes Connection
 	def closeConnection(self):
 		self.sendData("SHUTDOWN")
 		self.soc.close()
