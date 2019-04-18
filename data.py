@@ -15,10 +15,10 @@ class Data():
 	def __init__(self):
 		#Socket info
 		######################### 	   	     Pi        Oneplus
-		self.AVAILABLE_IP_LIST = ["192.168.137.45", "192.168.137.113", "192.168.137.110"]
+		self.AVAILABLE_IP_LIST = ["192.168.137.58", "192.168.137.129", "192.168.137.22"]
 		self.IP_LIST_LENGTH = len(self.AVAILABLE_IP_LIST)
 		#Avaliable ports
-		self.PORT = 3091
+		self.PORT = 30001
 		self.BUFFER_LENGTH = 128
 		self.HOST_NAME = ""
 		#PyQT info

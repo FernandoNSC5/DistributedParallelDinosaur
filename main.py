@@ -34,6 +34,7 @@ from PyQt5 import QtCore, QtWidgets, QtGui
 from PyQt5.QtCore import pyqtSlot
 from PyQt5.QtWidgets import QMainWindow, QPushButton, QApplication, QMessageBox, QLineEdit, QWidget, QLabel, QGridLayout, QRadioButton, QComboBox, QMessageBox
 from PyQt5.QtGui import QIcon, QPixmap, QPainter, QFont, QPen, QIntValidator
+import math as Math
 
 #UNITAU stuff
 import data as dt
@@ -186,13 +187,19 @@ class App(QMainWindow):
 		#Size = number of open threads
 		size = len(self.threads)
 		#Number of vet fragments
-		numOfFrag = int(len(vet)/size)
+		fragSize = len(vet)/size
+		print(fragSize)
 		#Creating sub-vet fragments
+		loopCounter = Math.ceil(fragSize)
+		print(loopCounter)
+		numOfFrag = int(fragSize)
+		print(numOfFrag)
 		frag = []
-		loopCounter = numOfFrag*size
 		for i in range(loopCounter):
 			if i == (loopCounter)-1:
 				frag.append(vet[numOfFrag*i : len(vet)])
+				while len(frag) < size:
+					frag.append([vet[0]])
 				return frag
 			frag.append(vet[numOfFrag*i : numOfFrag*(i+1)])
 
@@ -211,6 +218,7 @@ class App(QMainWindow):
 		#Creates sub-vectors
 		dt = list(map(int, dt.split()))
 		vectorOfSubvectors = self.vectorFragmentation(dt)
+		print(vectorOfSubvectors)
 
 		resp = dt[0]
 
