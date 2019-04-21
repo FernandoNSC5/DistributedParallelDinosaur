@@ -28,13 +28,13 @@
 import sys
 import asyncio
 import time
+import numpy as np
 
 #PyQT
 from PyQt5 import QtCore, QtWidgets, QtGui
 from PyQt5.QtCore import pyqtSlot
 from PyQt5.QtWidgets import QMainWindow, QPushButton, QApplication, QMessageBox, QLineEdit, QWidget, QLabel, QGridLayout, QRadioButton, QComboBox, QMessageBox
 from PyQt5.QtGui import QIcon, QPixmap, QPainter, QFont, QPen, QIntValidator
-import math as Math
 
 #UNITAU stuff
 import data as dt
@@ -184,24 +184,14 @@ class App(QMainWindow):
 	##########################################################
 	#VectorFragmentation(List vet, int size (of IP list))
 	def vectorFragmentation(self, vet):
-		#Size = number of open threads
+		#size = number of open threads
 		size = len(self.threads)
-		#Number of vet fragments
-		fragSize = len(vet)/size
-		print(fragSize)
 		#Creating sub-vet fragments
-		loopCounter = Math.ceil(fragSize)
-		print(loopCounter)
-		numOfFrag = int(fragSize)
-		print(numOfFrag)
 		frag = []
-		for i in range(loopCounter):
-			if i == (loopCounter)-1:
-				frag.append(vet[numOfFrag*i : len(vet)])
-				while len(frag) < size:
-					frag.append([vet[0]])
-				return frag
-			frag.append(vet[numOfFrag*i : numOfFrag*(i+1)])
+		#Running numpy array split and tranforming the arrays into lists
+		for arr in np.array_split(vet, size):
+			frag.append(list(arr))
+		return frag
 
 	#process(string opType (Type of Operation [MAX, MIN]))
 	def process(self, opType):
@@ -218,8 +208,6 @@ class App(QMainWindow):
 		#Creates sub-vectors
 		dt = list(map(int, dt.split()))
 		vectorOfSubvectors = self.vectorFragmentation(dt)
-		print(vectorOfSubvectors)
-
 		resp = dt[0]
 
 		if opType == "MAX":

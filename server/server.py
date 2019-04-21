@@ -6,12 +6,12 @@
 ##......_/…(….)...(…../      9º Período                 ##
 ##....../...|_|–...|_|                                  ##
 ##########################################################
-##	        WELCOME TO SERVER SIDE						##
+##	             WELCOME TO SERVER SIDE					##
 ##########################################################
 
 # COMMANDS LIST
-#   RECIVE "SHUTDOWN" - Turn off server
-#   RECIVE "PING"     - Returns server status
+#   RECEIVE "SHUTDOWN" - Turn off server
+#   RECEIVE "PING"     - Returns server status
 
 import socket
 
@@ -19,16 +19,18 @@ class server():
     
     def __init__(self):
         
-        self.PORT = 3081
+        self.PORT = 3000
         self.BUFFER_LENGTH = 128
         self.HOST = ""
+        self.listenTimes = 100
         
-        ###############
-        #   STATUS
-        #
-        #   1  - Avaliable
-        #   2  - Not avaliable
-        #
+        ##########################
+        #   STATUS               #
+        #                        #
+        #   1  - Available       #
+        #   2  - Not available   #
+        #                        #
+        ##########################
         self.STATUS = 1
         
         #Initializing server
@@ -43,13 +45,14 @@ class server():
             soc = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
             soc.bind((self.HOST, self.PORT))
             print("[SERVER] Initialized")
-            
+            soc.listen(self.listenTimes)
+            timesListened = 0
             while True:
-                
-                soc.listen(1)
-                print("[SERVER] Listenning...")
+                timesListened += 1
+                print("[SERVER] Listenning PORT" + str(self.PORT))
                 conn, addr = soc.accept()
-                print("[SERVER] Request from " + str(addr))
+                print("[SERVER] Request n° " + str(timesListened))
+                print("[SERVER] Requests from " + str(addr))
                 
                 while True:
                     rcData = conn.recv(self.BUFFER_LENGTH).decode()
@@ -57,14 +60,15 @@ class server():
                     if str(rcData) == "SHUTDOWN":
                         print("[SERVER] Turning off...")
                         break
+                    if str(rcData) == "SHUTDOWNSERVER":
+                        print("[SERVER] Turning off...")
+                        timesListened = self.listenTimes
+                        break
                     elif str(rcData) == "PING":
-                        print("[SERVER] Ping recived from " + str(addr))
+                        print("[SERVER] Ping received")
                         conn.send(str(self.STATUS).encode())
                         print("[SERVER] Status returned")
-                        print("\n")
-                        continue
                     else:
-                        print("[SERVER] Request from " + str(addr))
                         print("[SERVER] Processing...")
                         opType, rcData = rcData.split("#")
                         if opType == "MAX":
@@ -77,7 +81,8 @@ class server():
                     
                     print("\n")
                 
-                break
+                if(timesListened == self.listenTimes)
+                    break
         
         except Exception as e:
             print("[ERROR] " + str(e))
@@ -103,4 +108,3 @@ class server():
         return str(min)
 
 s = server()
-                

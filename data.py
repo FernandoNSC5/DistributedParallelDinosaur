@@ -9,16 +9,16 @@
 
 class Data():
 
-	#####################################################
-	##				USEFULL STUFF					   ##
-	#####################################################
+	######################################################
+	##					 USEFUL STUFF					##
+	######################################################
 	def __init__(self):
 		#Socket info
-		######################### 	   	     Pi        Oneplus
-		self.AVAILABLE_IP_LIST = ["192.168.137.58", "192.168.137.129", "192.168.137.22"]
-		self.IP_LIST_LENGTH = len(self.AVAILABLE_IP_LIST)
-		#Avaliable ports
-		self.PORT = 30001
+		#Servers Ips
+		self.SERVER_IP_LIST = ["192.168.137.58", "192.168.137.129", "192.168.137.22"]
+		self.IP_LIST_LENGTH = len(self.SERVER_IP_LIST)
+		#Servers Port
+		self.PORT = 3000
 		self.BUFFER_LENGTH = 128
 		self.HOST_NAME = ""
 		#PyQT info
@@ -33,10 +33,10 @@ class Data():
 	##				GETTERS AND SETTER				   ##
 	#####################################################
 	def getIpList(self):
-		return self.AVAILABLE_IP_LIST
+		return self.SERVER_IP_LIST
 
 	def getIpByIndex(self, index):
-		return self.AVAILABLE_IP_LIST[index]
+		return self.SERVER_IP_LIST[index]
 
 	def getIpListLength(self):
 		return self.IP_LIST_LENGTH
