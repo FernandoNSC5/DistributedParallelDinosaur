@@ -28,6 +28,7 @@
 import sys
 import asyncio
 import time
+import numpy as np
 
 #PyQT
 from PyQt5 import QtCore, QtWidgets, QtGui
@@ -195,17 +196,12 @@ class App(QMainWindow):
 	##########################################################
 	#VectorFragmentation(List vet, int size (of IP list))
 	def vectorFragmentation(self, vet, size):
-
-		#Number of vet fragments
-		numOfFrag = int(len(vet)/size)
-
 		#Creating sub-vet fragments
 		frag = []
-		for i in range(numOfFrag):
-			if i == numOfFrag-1:
-				frag.append(vet[numOfFrag*i : len(vet)])
-				return frag
-			frag.append(vet[numOfFrag*i : numOfFrag*(i+1)])
+		#Running numpy array split and tranforming the arrays into lists
+		for arr in np.array_split(vet, size):
+			frag.append(list(arr))
+		return frag
 
 	#process(string opType (Type of Operation [MAX, MIN]))
 	def process(self, opType):
