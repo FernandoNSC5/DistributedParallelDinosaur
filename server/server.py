@@ -81,7 +81,7 @@ class server():
                     
                     print("\n")
                 
-                if(timesListened == self.listenTimes)
+                if timesListened == self.listenTimes:
                     break
         
         except Exception as e:
