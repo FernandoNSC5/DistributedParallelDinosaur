@@ -73,6 +73,7 @@ class App(QMainWindow):
 
 		#Close Button
 		self.drawKillButton()
+		self.drawKillServersButton()
 		self.drawUI()
 
 		self.show()
@@ -102,6 +103,16 @@ class App(QMainWindow):
 				"QPushButton {color: white}"
 				"QPushButton {border-radius: 12px}")
 		self.killBtn.clicked.connect(self.killAppAction)
+
+	def drawKillServersButton(self):
+		self.killBtn = QPushButton('Close Servers', self)
+		self.killBtn.setVisible(True)
+		self.killBtn.resize(125,25)
+		self.killBtn.move(610,25)
+		self.killBtn.setStyleSheet("QPushButton {background-color: #543138}"
+				"QPushButton {color: white}"
+				"QPushButton {border-radius: 12px}")
+		self.killBtn.clicked.connect(self.killServersAction)
 
 	def drawUI(self):
 		self.vectorLine = QLineEdit(self)
@@ -169,6 +180,11 @@ class App(QMainWindow):
 	@pyqtSlot()
 	def killAppAction(self):
 		self.closeConnections()
+		sys.exit()
+
+	@pyqtSlot()
+	def killServersAction(self):
+		self.closeServers()
 		sys.exit()
 
 	@pyqtSlot()
@@ -250,8 +266,13 @@ class App(QMainWindow):
 		self.update()
 
 	def closeConnections(self):
-		while len(self.threads):
+		while len(self.threads) != 0:
 			self.threads[0].closeConnection()
+			self.threads.pop(0)
+	
+	def closeServers(self):
+		while len(self.threads) != 0:
+			self.threads[0].closeServer()
 			self.threads.pop(0)
 
 ##########################################################
