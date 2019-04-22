@@ -58,9 +58,11 @@ class server():
                     rcData = conn.recv(self.BUFFER_LENGTH).decode()
                     
                     if str(rcData) == "SHUTDOWN":
+                        con.send("".encode())
                         print("[SERVER] Turning off...")
                         break
                     if str(rcData) == "SHUTDOWNSERVER":
+                        con.send("".encode())
                         print("[SERVER] Turning off...")
                         timesListened = self.listenTimes
                         break
