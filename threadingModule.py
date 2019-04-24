@@ -92,3 +92,10 @@ class clientThread(Thread):
 		self.soc.close()
 		print("[-] Connection with " + str(self.IP) + " destroyed")
 		return True
+
+	# Closes Server
+	def closeServer(self):
+		self.sendData("SHUTDOWNSERVER")
+		self.soc.close()
+		print("[-] Server " + str(self.IP) + " destroyed")
+		return True
