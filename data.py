@@ -15,7 +15,7 @@ class Data():
 	def __init__(self):
 		#Socket info
 		#Servers Ips
-		self.SERVER_IP_LIST = ["192.168.137.58", "192.168.137.129", "192.168.137.22"]
+		self.SERVER_IP_LIST = ["192.168.137.83"]
 		self.IP_LIST_LENGTH = len(self.SERVER_IP_LIST)
 		#Servers Port
 		self.PORT = 3000
